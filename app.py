@@ -10,8 +10,7 @@ st.set_page_config(
 
 @st.cache_resource
 def load_model():
-    return joblib.load("online_shopper_model.pkl")
-
+    return joblib.load("online_shopper_model_compressed.pkl")
 model = load_model()
 
 st.title("🛒 Online Shoppers Purchasing Intention")
