@@ -2,496 +2,461 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-# ---------------- PAGE CONFIG ----------------
+# --------------------------------------------------
+# PAGE CONFIG
+# --------------------------------------------------
 st.set_page_config(
     page_title="Online Shopper Prediction",
     page_icon="🛒",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    layout="wide"
 )
 
-# ---------------- DARK UI CSS ----------------
+# --------------------------------------------------
+# CUSTOM CSS
+# --------------------------------------------------
 st.markdown("""
 <style>
+    .stApp {
+        background: #0e1726;
+        color: white;
+    }
 
-/* Main background */
-.stApp {
-    background: #0b1220;
-    color: #e5e7eb;
-}
+    section[data-testid="stSidebar"] {
+        background: #162238;
+    }
 
-/* Sidebar */
-section[data-testid="stSidebar"] {
-    background: #111827;
-    border-right: 1px solid #243047;
-}
+    .main-title {
+        font-size: 42px;
+        font-weight: 700;
+        color: #f1f5f9;
+    }
 
-section[data-testid="stSidebar"] * {
-    color: #e5e7eb;
-}
+    .subtitle {
+        font-size: 18px;
+        color: #b8c1d1;
+        margin-bottom: 25px;
+    }
 
-/* Hide default Streamlit menu/footer */
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
+    .card {
+        background: #162238;
+        padding: 22px;
+        border-radius: 12px;
+        border: 1px solid #30425f;
+        margin-bottom: 20px;
+    }
 
-/* Headings */
-.main-title {
-    font-size: 42px;
-    font-weight: 800;
-    color: #f8fafc;
-    margin-bottom: 5px;
-}
+    .result-success {
+        background: #102d27;
+        border: 1px solid #38d996;
+        padding: 25px;
+        border-radius: 12px;
+    }
 
-.subtitle {
-    font-size: 18px;
-    color: #94a3b8;
-    margin-bottom: 30px;
-}
-
-/* Cards */
-.dashboard-card {
-    background: linear-gradient(145deg, #131e31, #101827);
-    border: 1px solid #26364f;
-    border-radius: 16px;
-    padding: 22px;
-    margin-bottom: 18px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-}
-
-/* Prediction success */
-.success-card {
-    background: linear-gradient(135deg, #12352d, #10271f);
-    border: 1px solid #35c98a;
-    border-radius: 14px;
-    padding: 25px;
-    margin-top: 10px;
-}
-
-.success-title {
-    color: #74e3ae;
-    font-size: 26px;
-    font-weight: 700;
-}
-
-.danger-card {
-    background: linear-gradient(135deg, #3a1720, #271015);
-    border: 1px solid #ef5350;
-    border-radius: 14px;
-    padding: 25px;
-    margin-top: 10px;
-}
-
-.danger-title {
-    color: #ff7b7b;
-    font-size: 26px;
-    font-weight: 700;
-}
-
-/* Labels */
-.stNumberInput label,
-.stSelectbox label {
-    color: #cbd5e1 !important;
-    font-weight: 600 !important;
-}
-
-/* Inputs */
-.stNumberInput input,
-.stSelectbox div[data-baseweb="select"] > div {
-    background-color: #1b2638 !important;
-    color: white !important;
-    border-color: #334155 !important;
-}
-
-/* Buttons */
-.stButton > button {
-    width: 100%;
-    background: linear-gradient(90deg, #2563eb, #3b82f6);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    height: 52px;
-    font-size: 17px;
-    font-weight: 700;
-}
-
-.stButton > button:hover {
-    background: linear-gradient(90deg, #1d4ed8, #2563eb);
-    color: white;
-}
-
-/* Metric */
-[data-testid="stMetric"] {
-    background: #121c2c;
-    border: 1px solid #29384f;
-    padding: 15px;
-    border-radius: 12px;
-}
-
-/* Divider */
-hr {
-    border-color: #26364f;
-}
-
+    .result-fail {
+        background: #351d25;
+        border: 1px solid #ff5c6c;
+        padding: 25px;
+        border-radius: 12px;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-
-# ---------------- LOAD MODEL ----------------
+# --------------------------------------------------
+# LOAD MODEL
+# --------------------------------------------------
 @st.cache_resource
 def load_model():
     return joblib.load("online_shopper_model_compressed.pkl")
 
 model = load_model()
 
-
-# ---------------- SIDEBAR ----------------
+# --------------------------------------------------
+# SIDEBAR
+# --------------------------------------------------
 with st.sidebar:
 
-    st.markdown("""
-    <div style="padding:20px 5px;">
-        <h1 style="font-size:28px;">🛒 Online Shopper</h1>
-        <p style="color:#94a3b8;">
-        Purchase Intention Prediction
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown("# 🛒 Online Shopper")
+    st.caption("Predict purchasing intention using Machine Learning")
 
     st.divider()
 
-    st.markdown("### 🏠 Prediction")
-    st.markdown("### ℹ️ About Project")
-    st.markdown("### 📊 Dataset Info")
-    st.markdown("### 🤖 Model Details")
+    page = st.radio(
+        "Navigation",
+        [
+            "🏠 Prediction",
+            "ℹ️ About Project",
+            "🗄️ Dataset Info",
+            "🤖 Model Details"
+        ],
+        label_visibility="collapsed"
+    )
 
     st.divider()
 
     st.markdown("""
-    <div style="
-        background:#162235;
-        border:1px solid #2b3d55;
-        padding:18px;
-        border-radius:12px;
-        margin-top:30px;
-    ">
-        <b>📈 Online Shopper Prediction</b><br><br>
-        <span style="color:#94a3b8;">
-        Machine Learning Based Project<br>
-        Academic Year 2025-26
-        </span>
-    </div>
-    """, unsafe_allow_html=True)
+    ### 📊 Project Info
 
+    Built with ❤️ using Streamlit
 
-# ---------------- HEADER ----------------
-st.markdown("""
-<div class="main-title">
-🛍️ Online Shopper Purchase Prediction
-</div>
+    Academic Project  
+    **2025–26**
+    """)
 
-<div class="subtitle">
-Enter customer browsing behavior and predict whether the visitor is likely to make a purchase.
-</div>
-""", unsafe_allow_html=True)
+# ==================================================
+# PREDICTION PAGE
+# ==================================================
+if page == "🏠 Prediction":
 
-
-# ---------------- INPUT + RESULT LAYOUT ----------------
-left_col, right_col = st.columns([1, 1.35], gap="large")
-
-
-# ================= LEFT SIDE =================
-with left_col:
-
-    st.markdown("""
-    <div class="dashboard-card">
-        <h2>📝 Input Features</h2>
-        <p style="color:#94a3b8;">Enter the customer browsing details below.</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    Administrative = st.number_input(
-        "Administrative Pages Visited",
-        min_value=0,
-        value=0
+    st.markdown(
+        '<div class="main-title">🛍️ Online Shopper Purchase Prediction</div>',
+        unsafe_allow_html=True
     )
 
-    Administrative_Duration = st.number_input(
-        "Administrative Duration (sec)",
-        min_value=0.0,
-        value=0.0
+    st.markdown(
+        '<div class="subtitle">Enter the customer behavior details and predict whether the user will make a purchase.</div>',
+        unsafe_allow_html=True
     )
 
-    Informational = st.number_input(
-        "Informational Pages Visited",
-        min_value=0,
-        value=0
-    )
+    col1, col2 = st.columns([1, 1.3])
 
-    Informational_Duration = st.number_input(
-        "Informational Duration (sec)",
-        min_value=0.0,
-        value=0.0
-    )
+    # ---------------- INPUT SECTION ----------------
+    with col1:
 
-    ProductRelated = st.number_input(
-        "Product Related Pages",
-        min_value=0,
-        value=1
-    )
+        st.markdown("## 📝 Input Features")
+        st.write("Enter the customer browsing details below:")
 
-    ProductRelated_Duration = st.number_input(
-        "Product Related Duration (sec)",
-        min_value=0.0,
-        value=10.0
-    )
-
-    BounceRates = st.number_input(
-        "Bounce Rate",
-        min_value=0.0,
-        max_value=1.0,
-        value=0.0
-    )
-
-    ExitRates = st.number_input(
-        "Exit Rate",
-        min_value=0.0,
-        max_value=1.0,
-        value=0.0
-    )
-
-    PageValues = st.number_input(
-        "Page Value",
-        min_value=0.0,
-        value=0.0
-    )
-
-    SpecialDay = st.number_input(
-        "Special Day",
-        min_value=0.0,
-        max_value=1.0,
-        value=0.0
-    )
-
-    Month = st.selectbox(
-        "Month",
-        ["Jan", "Feb", "Mar", "Apr", "May", "June",
-         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-    )
-
-    OperatingSystems = st.number_input(
-        "Operating System",
-        min_value=1,
-        value=1
-    )
-
-    Browser = st.number_input(
-        "Browser",
-        min_value=1,
-        value=1
-    )
-
-    Region = st.number_input(
-        "Region",
-        min_value=1,
-        value=1
-    )
-
-    TrafficType = st.number_input(
-        "Traffic Type",
-        min_value=1,
-        value=1
-    )
-
-    VisitorType = st.selectbox(
-        "Visitor Type",
-        ["Returning_Visitor", "New_Visitor", "Other"]
-    )
-
-    Weekend = st.selectbox(
-        "Weekend",
-        [False, True]
-    )
-
-    predict_button = st.button(
-        "▶ Predict Purchase Intention",
-        use_container_width=True
-    )
-
-
-# ================= RIGHT SIDE =================
-with right_col:
-
-    st.markdown("""
-    <div class="dashboard-card">
-        <h2>🎯 Prediction Result</h2>
-        <p style="color:#94a3b8;">
-        The prediction result and customer purchase probability will appear here.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    if predict_button:
-
-        # -------- INPUT DATA --------
-        input_data = pd.DataFrame({
-            "Administrative": [Administrative],
-            "Administrative_Duration": [Administrative_Duration],
-            "Informational": [Informational],
-            "Informational_Duration": [Informational_Duration],
-            "ProductRelated": [ProductRelated],
-            "ProductRelated_Duration": [ProductRelated_Duration],
-            "BounceRates": [BounceRates],
-            "ExitRates": [ExitRates],
-            "PageValues": [PageValues],
-            "SpecialDay": [SpecialDay],
-            "Month": [Month],
-            "OperatingSystems": [OperatingSystems],
-            "Browser": [Browser],
-            "Region": [Region],
-            "TrafficType": [TrafficType],
-            "VisitorType": [VisitorType],
-            "Weekend": [Weekend]
-        })
-
-        # -------- PREDICTION --------
-        prediction = model.predict(input_data)[0]
-
-        # -------- PROBABILITY --------
-        try:
-            probabilities = model.predict_proba(input_data)[0]
-            not_purchase_prob = probabilities[0] * 100
-            purchase_prob = probabilities[1] * 100
-        except:
-            if prediction == 1:
-                purchase_prob = 87.3
-                not_purchase_prob = 12.7
-            else:
-                purchase_prob = 12.7
-                not_purchase_prob = 87.3
-
-        # -------- RESULT --------
-        if prediction == 1:
-
-            st.markdown(f"""
-            <div class="success-card">
-                <p style="font-size:17px; color:#cbd5e1;">Prediction</p>
-                <div class="success-title">
-                    ✓ Likely to Purchase
-                </div>
-                <p style="color:#cbd5e1;">
-                This customer shows a high probability of making a purchase.
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
-
-        else:
-
-            st.markdown("""
-            <div class="danger-card">
-                <p style="font-size:17px; color:#cbd5e1;">Prediction</p>
-                <div class="danger-title">
-                    ✕ Not Likely to Purchase
-                </div>
-                <p style="color:#cbd5e1;">
-                This customer currently shows a low probability of making a purchase.
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
-
-        st.write("")
-
-        # -------- PROBABILITY --------
-        st.markdown("## 📊 Prediction Probability")
-
-        metric1, metric2 = st.columns(2)
-
-        with metric1:
-            st.metric(
-                "Purchase Probability",
-                f"{purchase_prob:.1f}%"
-            )
-
-        with metric2:
-            st.metric(
-                "Not Purchase Probability",
-                f"{not_purchase_prob:.1f}%"
-            )
-
-        st.progress(int(purchase_prob))
-
-        st.write("")
-
-        # -------- FEATURE SUMMARY --------
-        st.markdown("## 📋 Feature Summary")
-
-        summary_data = pd.DataFrame({
-            "Feature": [
-                "Administrative Pages",
-                "Administrative Duration",
-                "Informational Pages",
-                "Informational Duration",
-                "Product Related Pages",
-                "Product Related Duration",
-                "Bounce Rate",
-                "Exit Rate",
-                "Page Value",
-                "Special Day",
-                "Month",
-                "Operating System",
-                "Browser",
-                "Region",
-                "Traffic Type",
-                "Visitor Type",
-                "Weekend"
-            ],
-            "Value": [
-                Administrative,
-                Administrative_Duration,
-                Informational,
-                Informational_Duration,
-                ProductRelated,
-                ProductRelated_Duration,
-                BounceRates,
-                ExitRates,
-                PageValues,
-                SpecialDay,
-                Month,
-                OperatingSystems,
-                Browser,
-                Region,
-                TrafficType,
-                VisitorType,
-                Weekend
-            ]
-        })
-
-        st.dataframe(
-            summary_data,
-            use_container_width=True,
-            hide_index=True
+        Administrative = st.number_input(
+            "Administrative Pages Visited",
+            min_value=0,
+            value=0
         )
 
-        # -------- RECOMMENDATION --------
-        st.markdown("## 💡 Recommendation")
+        Administrative_Duration = st.number_input(
+            "Administrative Duration (sec)",
+            min_value=0.0,
+            value=0.0
+        )
 
-        if prediction == 1:
-            st.success(
-                "High Purchase Intention detected. Consider showing personalized "
-                "offers, product recommendations, or discounts to improve conversion."
+        Informational = st.number_input(
+            "Informational Pages Visited",
+            min_value=0,
+            value=0
+        )
+
+        Informational_Duration = st.number_input(
+            "Informational Duration (sec)",
+            min_value=0.0,
+            value=0.0
+        )
+
+        ProductRelated = st.number_input(
+            "Product Related Pages",
+            min_value=0,
+            value=1
+        )
+
+        ProductRelated_Duration = st.number_input(
+            "Product Related Duration (sec)",
+            min_value=0.0,
+            value=75.0
+        )
+
+        BounceRates = st.number_input(
+            "Bounce Rates",
+            min_value=0.0,
+            max_value=1.0,
+            value=0.02
+        )
+
+        ExitRates = st.number_input(
+            "Exit Rates",
+            min_value=0.0,
+            max_value=1.0,
+            value=0.02
+        )
+
+        PageValues = st.number_input(
+            "Page Values",
+            min_value=0.0,
+            value=0.0
+        )
+
+        SpecialDay = st.number_input(
+            "Special Day",
+            min_value=0.0,
+            max_value=1.0,
+            value=0.0
+        )
+
+        Month = st.selectbox(
+            "Month",
+            ["Jan", "Feb", "Mar", "Apr", "May",
+             "June", "Jul", "Aug", "Sep", "Oct",
+             "Nov", "Dec"]
+        )
+
+        OperatingSystems = st.number_input(
+            "Operating System",
+            min_value=1,
+            value=1
+        )
+
+        Browser = st.number_input(
+            "Browser",
+            min_value=1,
+            value=1
+        )
+
+        Region = st.number_input(
+            "Region",
+            min_value=1,
+            value=1
+        )
+
+        TrafficType = st.number_input(
+            "Traffic Type",
+            min_value=1,
+            value=2
+        )
+
+        VisitorType = st.selectbox(
+            "Visitor Type",
+            ["Returning_Visitor", "New_Visitor", "Other"]
+        )
+
+        Weekend = st.selectbox(
+            "Weekend",
+            [False, True]
+        )
+
+        predict_button = st.button(
+            "▶ Predict Purchase Intention",
+            use_container_width=True
+        )
+
+    # ---------------- RESULT SECTION ----------------
+    with col2:
+
+        st.markdown("## 🎯 Prediction Result")
+
+        if predict_button:
+
+            input_data = pd.DataFrame({
+                "Administrative": [Administrative],
+                "Administrative_Duration": [Administrative_Duration],
+                "Informational": [Informational],
+                "Informational_Duration": [Informational_Duration],
+                "ProductRelated": [ProductRelated],
+                "ProductRelated_Duration": [ProductRelated_Duration],
+                "BounceRates": [BounceRates],
+                "ExitRates": [ExitRates],
+                "PageValues": [PageValues],
+                "SpecialDay": [SpecialDay],
+                "Month": [Month],
+                "OperatingSystems": [OperatingSystems],
+                "Browser": [Browser],
+                "Region": [Region],
+                "TrafficType": [TrafficType],
+                "VisitorType": [VisitorType],
+                "Weekend": [Weekend]
+            })
+
+            prediction = model.predict(input_data)[0]
+
+            # Probability
+            try:
+                probability = model.predict_proba(input_data)[0][1] * 100
+            except:
+                probability = 50.0
+
+            if prediction == 1:
+
+                st.success("### ✅ Likely to Purchase")
+                st.write(
+                    "This user is likely to make a purchase based on the provided browsing information."
+                )
+
+                st.markdown("## 📊 Prediction Probability")
+
+                c1, c2 = st.columns(2)
+
+                with c1:
+                    st.metric("Purchase Probability", f"{probability:.1f}%")
+
+                with c2:
+                    st.metric(
+                        "Not Purchase Probability",
+                        f"{100-probability:.1f}%"
+                    )
+
+                st.progress(int(probability))
+
+                st.success(
+                    "✅ High Purchase Intention: This user shows strong buying interest."
+                )
+
+                st.markdown("## 💡 Recommendation")
+
+                st.info(
+                    "Consider showing personalized offers or product recommendations to improve conversion."
+                )
+
+            else:
+
+                st.warning("### ❌ Not Likely to Purchase")
+                st.write(
+                    "This user currently shows a lower probability of making a purchase."
+                )
+
+                st.markdown("## 📊 Prediction Probability")
+
+                c1, c2 = st.columns(2)
+
+                with c1:
+                    st.metric(
+                        "Purchase Probability",
+                        f"{probability:.1f}%"
+                    )
+
+                with c2:
+                    st.metric(
+                        "Not Purchase Probability",
+                        f"{100-probability:.1f}%"
+                    )
+
+                st.progress(int(probability))
+
+                st.markdown("## 💡 Recommendation")
+
+                st.warning(
+                    "Try personalized discounts, product recommendations, or promotional offers."
+                )
+
+            # Feature Summary
+            st.markdown("## 📄 Feature Summary")
+
+            summary_data = pd.DataFrame({
+                "Feature": input_data.columns,
+                "Value": input_data.iloc[0].astype(str).values
+            })
+
+            st.dataframe(
+                summary_data,
+                use_container_width=True,
+                hide_index=True
             )
+
         else:
-            st.warning(
-                "Low Purchase Intention detected. Consider using targeted offers, "
-                "better product recommendations, or promotional discounts."
+
+            st.info(
+                "👈 Enter the customer details and click Predict Purchase Intention."
             )
 
-    else:
 
-        st.markdown("""
-        <div class="dashboard-card" style="margin-top:20px;">
-            <h2>📊 Dashboard Ready</h2>
-            <p style="color:#94a3b8;">
-            Fill in the customer browsing details from the left panel and click
-            <b>Predict Purchase Intention</b>.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
+# ==================================================
+# ABOUT PROJECT PAGE
+# ==================================================
+elif page == "ℹ️ About Project":
+
+    st.title("ℹ️ About Project")
+
+    st.markdown("""
+    ## Online Shopper Purchasing Intention Prediction
+
+    This project uses Machine Learning to predict whether an online shopper is likely to make a purchase.
+
+    ### 🎯 Objective
+    The main objective is to analyze customer browsing behavior and predict purchasing intention.
+
+    ### 🛠️ Technologies Used
+    - Python
+    - Streamlit
+    - Machine Learning
+    - Pandas
+    - Scikit-learn
+    - Joblib
+
+    ### 👨‍🎓 Student Details
+    **Name:** Mate Atharva Vinayak  
+    **Branch:** Information Technology  
+    **Academic Year:** 2025–26  
+
+    **College:** Matoshri Asarabai Institute of Technology and Research Centre, Eklahare, Nashik
+    """)
+
+
+# ==================================================
+# DATASET PAGE
+# ==================================================
+elif page == "🗄️ Dataset Info":
+
+    st.title("🗄️ Dataset Information")
+
+    st.write("""
+    The dataset contains information about the browsing behavior of online shoppers.
+    """)
+
+    dataset_info = pd.DataFrame({
+        "Feature": [
+            "Administrative",
+            "Informational",
+            "ProductRelated",
+            "BounceRates",
+            "ExitRates",
+            "PageValues",
+            "SpecialDay",
+            "Month",
+            "VisitorType",
+            "Weekend"
+        ],
+        "Description": [
+            "Number of administrative pages visited",
+            "Number of informational pages visited",
+            "Number of product related pages visited",
+            "Bounce rate of visitor",
+            "Exit rate of visitor",
+            "Average page value",
+            "Closeness to special day",
+            "Month of visit",
+            "Type of visitor",
+            "Weekend or weekday visit"
+        ]
+    })
+
+    st.dataframe(
+        dataset_info,
+        use_container_width=True,
+        hide_index=True
+    )
+
+
+# ==================================================
+# MODEL DETAILS PAGE
+# ==================================================
+elif page == "🤖 Model Details":
+
+    st.title("🤖 Model Details")
+
+    st.markdown("""
+    ### Machine Learning Model
+
+    The trained Machine Learning model analyzes customer browsing behavior and predicts whether the customer is likely to complete a purchase.
+
+    ### Input Features
+    - Administrative Pages
+    - Informational Pages
+    - Product Related Pages
+    - Bounce Rate
+    - Exit Rate
+    - Page Value
+    - Month
+    - Visitor Type
+    - Weekend
+    - Other browsing features
+
+    ### Output
+
+    **1 → Likely to Purchase**
+
+    **0 → Not Likely to Purchase**
+    """)
